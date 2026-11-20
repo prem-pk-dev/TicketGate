@@ -1,30 +1,36 @@
 # Cloudflare Workers deployment
 
-TicketGate uses the Cloudflare OpenNext adapter for its Next.js App Router deployment.
+TicketGate uses Next.js App Router with the OpenNext Cloudflare adapter. The repository is configured to deploy the Worker named `ticketgate`.
 
-## Worker settings
-- Worker name: `ticketgate` (must match `wrangler.jsonc`)
-- Production branch: `main`
-- Root directory: `/`
-- Build command: `npx opennextjs-cloudflare build`
-- Deploy command: `npx wrangler deploy`
+## Automated deployment (GitHub Actions)
 
-## Connect GitHub
-1. Open Cloudflare Dashboard → **Workers & Pages** → **Create application** → **GitHub**.
-2. Authorize the GitHub integration if prompted.
-3. Select `prem-pk-dev/TicketGate` and branch `main`.
-4. Set the Worker name to `ticketgate` and root directory to `/`.
-5. Set build command to `npx opennextjs-cloudflare build`.
-6. Set deploy command to `npx wrangler deploy`.
-7. In **Build variables and secrets**, add:
-   - `NEXT_PUBLIC_SUPABASE_URL` = value in `.env.example`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = value in `.env.example`
-   These public client values must be present at build time for Next.js to inline them.
-8. Save and Deploy. Cloudflare Workers Builds automatically creates its deployment API token by default; do not create or paste a token into GitHub.
+The workflow `.github/workflows/ci.yml` now:
+1. Installs dependencies and runs TypeScript, ESLint and the Next.js production build.
+2. Builds the Cloudflare Worker with `npx opennextjs-cloudflare build`.
+3. Deploys with `npx wrangler deploy` when the GitHub Actions secret `CLOUDFLARE_API_TOKEN` exists. Without that secret it skips only the deploy step; build verification still runs.
+4. Uploads the OpenNext output as a short-lived CI artifact for diagnosis.
 
-Cloudflare should show a `workers.dev` URL when the first deployment succeeds. The Worker name must match `wrangler.jsonc` or the build will fail.
+The account ID is already configured in the workflow. Public Supabase URL and publishable key are configured in `wrangler.jsonc` and the CI build environment. Never put the Supabase service-role key in a client variable or GitHub workflow.
+
+## One-time authorization required
+
+The connected Cloudflare OAuth session can inspect the account and free build-minute allowance, but it cannot create API tokens (Cloudflare returns 403 because the OAuth grant lacks API Tokens Write). A repository secret is therefore needed once:
+
+1. In Cloudflare Dashboard, open **My Profile → API Tokens → Create Token**.
+2. Use the **Edit Cloudflare Workers** template, or create a custom token with Workers Editor/Admin scope sufficient to create and deploy the new Worker named `ticketgate`. If the Worker already exists, an Editor role scoped only to that Worker is narrower.
+3. Scope it to the TicketGate Cloudflare account only. Do not add DNS, billing, Pages, KV or R2 permissions unless Cloudflare explicitly requires them for a later feature.
+4. Copy the token once. Do not paste it into ChatGPT or commit it to the repository.
+5. In GitHub, open [TicketGate repository Actions secrets](https://github.com/prem-pk-dev/TicketGate/settings/secrets/actions) → **New repository secret**:
+   - Name: `CLOUDFLARE_API_TOKEN`
+   - Secret: paste the token value.
+6. The next push to `main` runs the deployment automatically. The workflow uses the existing account ID `a9b08391a849a2e0804f6c93bb65c251`.
+
+Official references:
+- [Cloudflare GitHub Actions deployment](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
+- [Cloudflare Workers roles and permissions](https://developers.cloudflare.com/workers/authorization/)
 
 ## Local commands
+
 ```bash
 npm install
 npm run dev
@@ -32,7 +38,6 @@ npm run preview
 npm run deploy
 ```
 
-## Cost
-No paid add-ons or payment processor are configured. Workers Builds and Supabase usage remain subject to the accounts' free-tier quotas; check usage before enabling any paid plan.
+## Cost controls
 
-Official guide: https://developers.cloudflare.com/workers/ci-cd/builds/
+No paid add-ons or payment processor are configured. Dummy payment only simulates success/failure. Cloudflare Workers and Supabase remain subject to free-tier quotas; no paid plan should be enabled automatically.
