@@ -689,7 +689,12 @@ export type Database = {
         Returns: Json
       }
       create_booking: {
-        Args: { p_promo_code?: string; p_seat_ids: string[]; p_show_id: string }
+        Args: {
+          p_add_on_ids?: string[]
+          p_promo_code?: string
+          p_seat_ids: string[]
+          p_show_id: string
+        }
         Returns: Json
       }
       current_user_role: {
