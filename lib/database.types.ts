@@ -494,6 +494,48 @@ export type Database = {
           },
         ]
       }
+      show_queue_entries: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          show_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          show_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          show_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "show_queue_entries_show_id_fkey"
+            columns: ["show_id"]
+            isOneToOne: false
+            referencedRelation: "shows"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "show_queue_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       show_seats: {
         Row: {
           booking_id: string | null
@@ -701,6 +743,8 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_show_queue_status: { Args: { p_show_id: string }; Returns: Json }
+      join_show_queue: { Args: { p_show_id: string }; Returns: Json }
       lock_show_seats: {
         Args: { p_seat_ids: string[]; p_show_id: string }
         Returns: Json
