@@ -3,24 +3,26 @@
 TicketGate uses the Cloudflare OpenNext adapter for its Next.js App Router deployment.
 
 ## Worker settings
-- Worker name: `ticketgate`
-- Build command: `npx opennextjs-cloudflare build`
-- Deploy command: `npx wrangler deploy`
+- Worker name: `ticketgate` (must match `wrangler.jsonc`)
 - Production branch: `main`
 - Root directory: `/`
-
-The Worker configuration already contains the public Supabase project URL and publishable key. These values are intended to be public browser configuration; never put a Supabase service-role key in the Worker vars or browser bundle.
+- Build command: `npx opennextjs-cloudflare build`
+- Deploy command: `npx wrangler deploy`
 
 ## Connect GitHub
-In Cloudflare Dashboard:
-1. Open **Workers & Pages** → **Create application** → **Import a repository**.
-2. Authorize GitHub if prompted and select `prem-pk-dev/TicketGate`.
-3. Select `main` as the production branch.
-4. Set the build command to `npx opennextjs-cloudflare build`.
-5. Set the deploy command to `npx wrangler deploy`.
-6. Set the root directory to `/`. In **Build variables and secrets**, add both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` with the values from `.env.example` (they are public client configuration and must be available at build time). Then Save and Deploy.
+1. Open Cloudflare Dashboard → **Workers & Pages** → **Create application** → **GitHub**.
+2. Authorize the GitHub integration if prompted.
+3. Select `prem-pk-dev/TicketGate` and branch `main`.
+4. Set the Worker name to `ticketgate` and root directory to `/`.
+5. Set build command to `npx opennextjs-cloudflare build`.
+6. Set deploy command to `npx wrangler deploy`.
+7. In **Build variables and secrets**, add:
+   - `NEXT_PUBLIC_SUPABASE_URL` = value in `.env.example`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = value in `.env.example`
+   These public client values must be present at build time for Next.js to inline them.
+8. Save and Deploy. Cloudflare Workers Builds automatically creates its deployment API token by default; do not create or paste a token into GitHub.
 
-Cloudflare may create a pull request to add framework configuration. Review it rather than overwriting the existing OpenNext configuration.
+Cloudflare should show a `workers.dev` URL when the first deployment succeeds. The Worker name must match `wrangler.jsonc` or the build will fail.
 
 ## Local commands
 ```bash
@@ -31,4 +33,6 @@ npm run deploy
 ```
 
 ## Cost
-Workers and Supabase have free-tier limits and quotas. No paid add-ons or payment processor are configured. Check current account usage before enabling paid plans or optional services.
+No paid add-ons or payment processor are configured. Workers Builds and Supabase usage remain subject to the accounts' free-tier quotas; check usage before enabling any paid plan.
+
+Official guide: https://developers.cloudflare.com/workers/ci-cd/builds/
