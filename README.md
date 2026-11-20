@@ -39,10 +39,10 @@ The exact applied SQL history is tracked under `supabase/migrations/`. Link the 
 All exposed tables have RLS enabled. Seat availability is exposed through a column-safe view; internal lock owner and booking fields are not public. Security-sensitive RPC implementations live in a private schema and are called through authenticated wrappers. Never expose a Supabase service-role key.
 
 ## Cloudflare
-See [Cloudflare deployment guide](docs/deploy-cloudflare.md). The Worker uses `wrangler.jsonc`, `open-next.config.ts`, and the OpenNext adapter. Cloudflare Workers Builds should use:
-- Build: `npx opennextjs-cloudflare build`
-- Deploy: `npx wrangler deploy`
-- Branch: `main`
+See [Cloudflare deployment guide](docs/deploy-cloudflare.md). The Worker uses `wrangler.jsonc`, `open-next.config.ts`, and the OpenNext adapter. GitHub Actions runs the OpenNext build and deploys with `npx wrangler deploy` on `main` when the repository secret `CLOUDFLARE_API_TOKEN` is configured. See [the deployment guide](docs/deploy-cloudflare.md) for the one-time token setup. The workflow still runs build checks if deployment credentials are absent.
+
+## Media assets
+The homepage logo, favicon and demo event posters use only registered public URLs from [MEDIA-ASSETS/PublicUrl.md](https://github.com/prem-pk-dev/MEDIA-ASSETS/blob/main/PublicUrl.md). Add no external image URL unless it is present in that approved manifest.
 
 ## Payment
 The checkout is a simulation only. It does not collect card details or move money.
@@ -58,4 +58,4 @@ from auth.users u where p.id = u.id and u.email = 'YOUR_LOGIN_EMAIL';
 After that, assign `ORGANIZER` roles from the Admin dashboard. Role updates are protected by an admin-only database RPC.
 
 ## Verification status
-Supabase migrations, seed counts and security advisor have been verified. A production build and browser E2E tests remain pending. The two-client seat-lock test is wired into CI but requires the GitHub secret `SUPABASE_SERVICE_ROLE_KEY` to execute. Live Cloudflare deployment remains pending. Cloudflare Git repository connection has been registered; finish the Worker import/build in the Cloudflare dashboard as described in `docs/deploy-cloudflare.md`.
+Supabase migrations, seed counts and security advisor have been verified. A production build and browser E2E tests remain pending. The two-client seat-lock test is wired into CI but requires the GitHub secret `SUPABASE_SERVICE_ROLE_KEY` to execute. Live Cloudflare deployment remains pending. Cloudflare deployment is wired through GitHub Actions but requires the repository secret `CLOUDFLARE_API_TOKEN`; see `docs/deploy-cloudflare.md`. The live Worker URL has not yet been verified.
