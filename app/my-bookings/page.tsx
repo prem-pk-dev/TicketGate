@@ -1,0 +1,11 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Ticket,CalendarDays,ArrowUpRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+export default async function MyBookingsPage(){
+ const supabase=await createClient();if(!supabase)redirect("/auth");
+ const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/auth");
+ const {data:bookings}=await supabase.from("bookings").select("id,booking_code,status,total,created_at,shows(starts_at,events(title))").eq("user_id",user.id).order("created_at",{ascending:false});
+ return <main className="container min-h-screen py-12"><Link href="/" className="text-sm text-[#c7f36b]">← TicketGate</Link><div className="mt-8"><p className="text-xs font-bold tracking-[.2em] text-[#c7f36b]">YOUR TICKETS</p><h1 className="mt-2 text-3xl font-black">My bookings</h1><p className="mt-2 text-sm text-[#929bad]">All your upcoming and past experiences in one place.</p></div>
+ <div className="mt-8 space-y-3">{(bookings||[]).length===0?<div className="rounded-2xl border border-white/10 bg-[#111521] p-8 text-center"><Ticket className="mx-auto text-[#c7f36b]" size={28}/><p className="mt-4 font-semibold">No bookings yet</p><p className="mt-2 text-sm text-[#929bad]">Your next great experience is waiting.</p><Link href="/" className="mt-5 inline-block rounded-xl bg-[#c7f36b] px-5 py-3 text-sm font-bold text-black">Explore events</Link></div>:(bookings||[]).map((b:any)=><Link key={b.id} href={"/bookings/"+b.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[#111521] p-5 transition hover:border-white/20"><div><p className="font-bold">{b.shows?.events?.title||"Ticket booking"}</p><p className="mt-2 flex items-center gap-2 text-xs text-[#929bad]"><CalendarDays size={13}/>{new Date(b.shows?.starts_at).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}</p><p className="mt-2 text-[11px] text-[#7f899e]">{b.booking_code} · {b.status}</p></div><div className="flex items-center gap-4"><span className="font-bold">₹{Number(b.total).toFixed(2)}</span><ArrowUpRight className="text-[#c7f36b]" size={18}/></div></Link>)}</div></main>;
+}
