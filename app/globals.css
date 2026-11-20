@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+:root { color-scheme: dark; --bg: #090b12; --panel: #111521; --muted: #8b93a7; --line: #242a39; --accent: #c7f36b; }
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; background: radial-gradient(ellipse at 50% -25%, #242a43 0%, #090b12 55%); color: #f7f8fb; font-family: Arial, Helvetica, sans-serif; }
+button, a { -webkit-tap-highlight-color: transparent; }
+::selection { background: #c7f36b; color: #10130a; }
+.container { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+.glass { background: rgba(17,21,33,.78); border: 1px solid rgba(255,255,255,.09); backdrop-filter: blur(18px); }
+.poster { background: linear-gradient(145deg,var(--c1),var(--c2)); position: relative; overflow: hidden; }
+.poster:after { content:""; position:absolute; inset:35% 0 0; background:linear-gradient(transparent,rgba(0,0,0,.72)); }
