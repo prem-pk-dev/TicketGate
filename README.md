@@ -40,7 +40,7 @@ See [Cloudflare deployment guide](docs/deploy-cloudflare.md). The Worker uses `w
 The checkout is a simulation only. It does not collect card details or move money.
 
 ## Roles
-New users receive the `USER` role. Promote an account to `ORGANIZER` or `ADMIN` only through a trusted database administrator process; never expose role changes in the client.
+New users receive the `USER` role. New users receive the `USER` role. To bootstrap the first admin, sign up through `/auth`, then run this once in the Supabase SQL Editor using that account's email:\n\n```sql\nupdate public.profiles p set role = 'ADMIN'\nfrom auth.users u where p.id = u.id and u.email = 'YOUR_LOGIN_EMAIL';\n```\n\nAfter that, assign `ORGANIZER` roles from the Admin dashboard. Role updates are protected by an admin-only database RPC.
 
 ## Verification status
-Supabase migrations and seed counts have been applied and verified. A production build, browser E2E tests, seat-lock concurrency test, and live Cloudflare deployment are still pending.
+Supabase migrations and seed counts have been applied and verified. Supabase seed counts and security advisor have been verified. A production build, browser E2E tests, two-client seat-lock race test, and live Cloudflare deployment remain pending. Cloudflare Git repository connection has been registered; finish the Worker import/build in the Cloudflare dashboard as described in `docs/deploy-cloudflare.md`.
