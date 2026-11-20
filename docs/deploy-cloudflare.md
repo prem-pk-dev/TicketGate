@@ -17,7 +17,7 @@ The account ID is already configured in the workflow. Public Supabase URL and pu
 The connected Cloudflare OAuth session can inspect the account and free build-minute allowance, but it cannot create API tokens (Cloudflare returns 403 because the OAuth grant lacks API Tokens Write). A repository secret is therefore needed once:
 
 1. In Cloudflare Dashboard, open **My Profile → API Tokens → Create Token**.
-2. Use the **Edit Cloudflare Workers** template, or create a custom token with Workers Editor/Admin scope sufficient to create and deploy the new Worker named `ticketgate`. If the Worker already exists, an Editor role scoped only to that Worker is narrower.
+2. Create a custom token with **Workers → Admin** at the account/product scope for the initial creation of the new Worker. After the first successful deployment, reduce the token to **Workers → Editor** scoped only to the `ticketgate` Worker; subsequent deployments need only Editor on that Worker.
 3. Scope it to the TicketGate Cloudflare account only. Do not add DNS, billing, Pages, KV or R2 permissions unless Cloudflare explicitly requires them for a later feature.
 4. Copy the token once. Do not paste it into ChatGPT or commit it to the repository.
 5. In GitHub, open [TicketGate repository Actions secrets](https://github.com/prem-pk-dev/TicketGate/settings/secrets/actions) → **New repository secret**:
