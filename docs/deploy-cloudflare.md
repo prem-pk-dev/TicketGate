@@ -42,3 +42,8 @@ npm run deploy
 ## Cost controls
 
 No paid add-ons or payment processor are configured. Dummy payment only simulates success/failure. Cloudflare Workers and Supabase remain subject to free-tier quotas; no paid plan should be enabled automatically.
+
+
+## Re-running after adding the repository secret
+
+After saving `CLOUDFLARE_API_TOKEN`, trigger a new push to `main` (a documentation-only commit is sufficient). Confirm the `Deploy to Cloudflare Workers` step runs rather than printing the skip message, then verify the `ticketgate` Worker in the Cloudflare dashboard. A green build alone does not prove deployment succeeded.
