@@ -20,13 +20,15 @@ A modern event-ticket discovery and booking platform built for India.
 - Event detail pages and showtime links.
 - Sign-up/sign-in using Supabase Auth.
 - Interactive seat map, max 10 seats per booking.
+- Database-backed virtual waiting room with admission slots.
 - Atomic 10-minute seat holds using Postgres row locks.
-- Booking creation RPC with fees and promo validation.
+- Booking creation RPC with add-ons, fees and promo validation.
 - Dummy success/failure payment RPC with idempotency.
 - Booking history, QR digital ticket, cancellation and simulated refund.
 - Organizer event/show management and automatic seat-map generation.
 - Admin dashboard for users, roles, cities, venues and halls.
 - Staff ticket validation and check-in.
+- Two-client concurrency test script at `scripts/test-seat-lock-concurrency.mjs`.
 - Seeded demo catalog: 5 cities, 8 venues, 12 events, 12 shows, 960 seat records.
 - Promo codes: `WELCOME10`, `TICKET50`.
 
@@ -53,4 +55,4 @@ from auth.users u where p.id = u.id and u.email = 'YOUR_LOGIN_EMAIL';
 After that, assign `ORGANIZER` roles from the Admin dashboard. Role updates are protected by an admin-only database RPC.
 
 ## Verification status
-Supabase migrations, seed counts and security advisor have been verified. A production build, browser E2E tests, two-client seat-lock race test, and live Cloudflare deployment remain pending. Cloudflare Git repository connection has been registered; finish the Worker import/build in the Cloudflare dashboard as described in `docs/deploy-cloudflare.md`.
+Supabase migrations, seed counts and security advisor have been verified. A production build and browser E2E tests remain pending. The two-client seat-lock test is wired into CI but requires the GitHub secret `SUPABASE_SERVICE_ROLE_KEY` to execute. Live Cloudflare deployment remains pending. Cloudflare Git repository connection has been registered; finish the Worker import/build in the Cloudflare dashboard as described in `docs/deploy-cloudflare.md`.
