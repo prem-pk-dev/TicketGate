@@ -16,7 +16,7 @@ A modern event-ticket discovery and booking platform built for India.
 5. Open http://localhost:3000.
 
 ## Implemented
-- Responsive discovery homepage with city/event data from Supabase.
+- Responsive discovery homepage with event search, category and city filters.
 - Event detail pages and showtime links.
 - Sign-up/sign-in using Supabase Auth.
 - Interactive seat map, max 10 seats per booking.
