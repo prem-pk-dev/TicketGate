@@ -33,6 +33,8 @@ try {
   seatId = seat.seat_id;
 
   const [clientA, clientB] = await Promise.all([createTestUser(), createTestUser()]);
+  const queueResults = await Promise.all([clientA.rpc("join_show_queue", { p_show_id: showId }), clientB.rpc("join_show_queue", { p_show_id: showId })]);
+  for (const result of queueResults) if (result.error) throw result.error;
   const attempts = await Promise.all([
     clientA.rpc("lock_show_seats", { p_show_id: showId, p_seat_ids: [seatId] }),
     clientB.rpc("lock_show_seats", { p_show_id: showId, p_seat_ids: [seatId] }),
