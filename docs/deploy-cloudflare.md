@@ -1,24 +1,25 @@
 # Cloudflare Workers deployment
 
-TicketGate uses Next.js App Router with the OpenNext Cloudflare adapter. The repository is configured to deploy the Worker named `ticketgate`.
+TicketGate uses Next.js App Router with the OpenNext Cloudflare adapter. The Worker name is `ticketgate`.
 
 ## Automated deployment (GitHub Actions)
 
-The workflow `.github/workflows/ci.yml` now:
+The workflow `.github/workflows/ci.yml`:
 1. Installs dependencies and runs TypeScript, ESLint and the Next.js production build.
 2. Builds the Cloudflare Worker with `npx opennextjs-cloudflare build`.
-3. Deploys with `npx wrangler deploy` when the GitHub Actions secret `CLOUDFLARE_API_TOKEN` exists. Without that secret it skips only the deploy step; build verification still runs.
-4. Uploads the OpenNext output as a short-lived CI artifact for diagnosis.
+3. Bundles the exact Worker upload with `npx wrangler deploy --dry-run --outdir .worker-dist` (no deployment occurs in this step).
+4. Deploys with `npx wrangler deploy` only when the GitHub Actions secret `CLOUDFLARE_API_TOKEN` exists. Without that secret, deployment is skipped while build verification continues.
+5. Uploads the OpenNext and Wrangler build outputs as a short-lived CI artifact.
 
-The account ID is already configured in the workflow. Public Supabase URL and publishable key are configured in `wrangler.jsonc` and the CI build environment. Never put the Supabase service-role key in a client variable or GitHub workflow.
+The account ID and public Supabase URL/publishable key are already configured. Never put the Supabase service-role key in a client variable or GitHub workflow.
 
 ## One-time authorization required
 
-The connected Cloudflare OAuth session can inspect the account and free build-minute allowance, but it cannot create API tokens (Cloudflare returns 403 because the OAuth grant lacks API Tokens Write). A repository secret is therefore needed once:
+The connected Cloudflare session can inspect the account and directly upload Worker scripts, but it cannot create API tokens. GitHub Actions cannot reuse the ChatGPT OAuth session, so it needs a repository secret once:
 
 1. In Cloudflare Dashboard, open **My Profile → API Tokens → Create Token**.
-2. Create a custom token with **Workers → Admin** at the account/product scope for the initial creation of the new Worker. After the first successful deployment, reduce the token to **Workers → Editor** scoped only to the `ticketgate` Worker; subsequent deployments need only Editor on that Worker.
-3. Scope it to the TicketGate Cloudflare account only. Do not add DNS, billing, Pages, KV or R2 permissions unless Cloudflare explicitly requires them for a later feature.
+2. Create a custom token with the least-privilege **Workers Scripts Write** permission (the UI may label this Workers Scripts: Edit), scoped to this Cloudflare account. This permission covers the Worker script upload and its static-asset upload session; do not grant Workers Admin unless Cloudflare explicitly reports that a required operation needs it.
+3. Do not add DNS, billing, Pages, KV or R2 permissions.
 4. Copy the token once. Do not paste it into ChatGPT or commit it to the repository.
 5. In GitHub, open [TicketGate repository Actions secrets](https://github.com/prem-pk-dev/TicketGate/settings/secrets/actions) → **New repository secret**:
    - Name: `CLOUDFLARE_API_TOKEN`
