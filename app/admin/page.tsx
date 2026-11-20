@@ -4,7 +4,8 @@ import { useEffect,useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ShieldCheck,Users,Building2,CalendarDays,MapPin } from "lucide-react";
 type Profile={id:string;full_name:string|null;role:string;created_at:string};
-type City={id:string;name:string;slug:string;state:string};\ntype Venue={id:string;name:string;address:string};
+type City={id:string;name:string;slug:string;state:string};
+type Venue={id:string;name:string;address:string};
 export default function AdminPage(){
  const [supabase]=useState(()=>createClient());const [role,setRole]=useState("");const [users,setUsers]=useState<Profile[]>([]);const [cities,setCities]=useState<City[]>([]);const [venues,setVenues]=useState<Venue[]>([]);
  const [stats,setStats]=useState({events:0,venues:0,shows:0,bookings:0});const [cityName,setCityName]=useState("");const [stateName,setStateName]=useState("Rajasthan");const [venueName,setVenueName]=useState("");const [venueCity,setVenueCity]=useState("");const [venueAddress,setVenueAddress]=useState("");const [hallVenue,setHallVenue]=useState("");const [hallName,setHallName]=useState("Main Hall");
