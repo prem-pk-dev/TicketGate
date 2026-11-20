@@ -7,11 +7,18 @@ export default async function SearchPage({searchParams}:{searchParams:Promise<{q
  const supabase=await createClient();let events:EventItem[]=[];let cities:City[]=[];
  if(supabase){
   const {data:cityRows}=await supabase.from("cities").select("id,name,slug,state").eq("is_active",true).order("name");if(cityRows)cities=cityRows as City[];
-  let query=supabase.from("events").select("id,title,slug,category,description,poster_url,language,age_rating").eq("status","PUBLISHED");
-  if(q)query=query.ilike("title","%"+q+"%");
-  if(category)query=query.eq("category",category);
-  if(city){const selectedCity=cities.find(c=>c.slug===city);if(selectedCity){query=supabase.from("events").select("id,title,slug,category,description,poster_url,language,age_rating,shows!inner(halls!inner(venues!inner(city_id)))").eq("status","PUBLISHED").eq("shows.halls.venues.city_id",selectedCity.id);if(q)query=query.ilike("title","%"+q+"%");if(category)query=query.eq("category",category);}}
-  const {data}=await query.limit(30);if(data)events=data as unknown as EventItem[];
+  const selectedCity=cities.find(c=>c.slug===city);
+  if(city&&selectedCity){
+   let cityQuery=supabase.from("events").select("id,title,slug,category,description,poster_url,language,age_rating,shows!inner(halls!inner(venues!inner(city_id)))").eq("status","PUBLISHED").eq("shows.halls.venues.city_id",selectedCity.id);
+   if(q)cityQuery=cityQuery.ilike("title","%"+q+"%");
+   if(category)cityQuery=cityQuery.eq("category",category);
+   const {data}=await cityQuery.limit(30);if(data)events=data as unknown as EventItem[];
+  }else{
+   let allQuery=supabase.from("events").select("id,title,slug,category,description,poster_url,language,age_rating").eq("status","PUBLISHED");
+   if(q)allQuery=allQuery.ilike("title","%"+q+"%");
+   if(category)allQuery=allQuery.eq("category",category);
+   const {data}=await allQuery.limit(30);if(data)events=data as unknown as EventItem[];
+  }
  }
  return <main className="container min-h-screen py-10"><Link href="/" className="inline-flex items-center gap-2 text-sm text-[#c7f36b]"><ArrowLeft size={16}/> Home</Link><div className="mt-8"><p className="text-xs font-bold tracking-[.2em] text-[#c7f36b]">DISCOVER</p><h1 className="mt-2 text-3xl font-black">Find your next experience</h1></div>
  <form action="/search" method="GET" className="mt-6 grid gap-3 rounded-2xl border border-white/10 bg-[#111521] p-4 sm:grid-cols-[1fr_180px_180px_auto]"><label className="flex items-center gap-3"><Search className="text-[#929bad]" size={18}/><input name="q" defaultValue={q} placeholder="Search event title…" className="w-full bg-transparent py-2 text-sm outline-none"/></label><select name="category" defaultValue={category} className="rounded-xl border border-white/10 bg-[#171c2a] px-3 py-3 text-sm"><option value="">All categories</option>{["Concerts","Movies","Sports","Theatre","Experiences"].map(x=><option key={x}>{x}</option>)}</select><select name="city" defaultValue={city} className="rounded-xl border border-white/10 bg-[#171c2a] px-3 py-3 text-sm"><option value="">All cities</option>{cities.map(x=><option key={x.id} value={x.slug}>{x.name}</option>)}</select><button className="rounded-xl bg-[#c7f36b] px-5 py-3 text-sm font-bold text-black">Search</button></form>
