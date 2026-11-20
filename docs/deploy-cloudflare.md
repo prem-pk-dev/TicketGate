@@ -18,7 +18,7 @@ In Cloudflare Dashboard:
 3. Select `main` as the production branch.
 4. Set the build command to `npx opennextjs-cloudflare build`.
 5. Set the deploy command to `npx wrangler deploy`.
-6. Set the root directory to `/`, then Save and Deploy.
+6. Set the root directory to `/`. In **Build variables and secrets**, add both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` with the values from `.env.example` (they are public client configuration and must be available at build time). Then Save and Deploy.
 
 Cloudflare may create a pull request to add framework configuration. Review it rather than overwriting the existing OpenNext configuration.
 
