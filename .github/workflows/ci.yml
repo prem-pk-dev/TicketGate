@@ -22,3 +22,15 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://nokxeuxmhbbnllijnfht.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_ZnLEvLm_6-BjUfEaHAN_8Q_y3sqQdOQ
+
+      - name: Seat-lock concurrency test (requires CI secret)
+        env:
+          SUPABASE_URL: https://nokxeuxmhbbnllijnfht.supabase.co
+          SUPABASE_ANON_KEY: sb_publishable_ZnLEvLm_6-BjUfEaHAN_8Q_y3sqQdOQ
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "Skipping concurrency test: SUPABASE_SERVICE_ROLE_KEY secret is not configured."
+          else
+            npm run test:concurrency
+          fi
