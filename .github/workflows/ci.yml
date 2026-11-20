@@ -22,6 +22,15 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://nokxeuxmhbbnllijnfht.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_ZnLEvLm_6-BjUfEaHAN_8Q_y3sqQdOQ
+      - name: Upload OpenNext build output for account-managed deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: ticketgate-opennext-build
+          path: |
+            .open-next/
+            .worker/
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Seat-lock concurrency test (requires CI secret)
         env:
