@@ -32,6 +32,9 @@ A modern event-ticket discovery and booking platform built for India.
 - Seeded demo catalog: 5 cities, 8 venues, 12 events, 12 shows, 960 seat records.
 - Promo codes: `WELCOME10`, `TICKET50`.
 
+## Database setup
+The exact applied SQL history is tracked under `supabase/migrations/`. Link the existing project with `supabase link --project-ref nokxeuxmhbbnllijnfht`, then use `supabase migration list` to verify it matches. Use `supabase db push` only for new migrations; do not reset the production project.
+
 ## Database safety
 All exposed tables have RLS enabled. Seat availability is exposed through a column-safe view; internal lock owner and booking fields are not public. Security-sensitive RPC implementations live in a private schema and are called through authenticated wrappers. Never expose a Supabase service-role key.
 
